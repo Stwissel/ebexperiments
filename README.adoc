@@ -1,31 +1,32 @@
-= Ebexperiment
+= EventBus Experiment
 
 image:https://img.shields.io/badge/vert.x-4.0.0.Beta1-purple.svg[link="https://vertx.io"]
 
 This application was generated using http://start.vertx.io
 
-== Building
+The application compares execution speeds in a crude way for different EventBus useage pattern
 
-To launch your tests:
-```
-./mvnw clean test
-```
+Just run the main() method in the MainVerticle class. It will
 
-To package your application:
-```
-./mvnw clean package
-```
-
-To run your application:
-```
-./mvnw clean compile exec:java
-```
-
-== Help
-
-* https://vertx.io/docs/[Vert.x Documentation]
-* https://stackoverflow.com/questions/tagged/vert.x?sort=newest&pageSize=15[Vert.x Stack Overflow]
-* https://groups.google.com/forum/?fromgroups#!forum/vertx[Vert.x User Group]
-* https://gitter.im/eclipse-vertx/vertx-users[Vert.x Gitter]
+- Deploy 2 verticles
+- Generate sample data
+- Start a http listener on 8888
 
 
+## Measurements
+
+Use curl to call the end points. Performance data will be printed to the console:
+
+1. `curl localhost:8888/test1` -> Simple Request/Response. 1 packet received for JsonArray with 10000 elements
+2. `curl localhost:8888/test2` -> Request/Response. 10000 requests/responses, one for each element
+3. `curl localhost:8888/test3` -> Start a listend and trigger data verticle to send 1 by one without waiting
+4. `curl localhost:8888/test4` -> Same line Test3, but send from inside executeBlocking
+5. `curl localhost:8888/test5` -> Start a listener and trigger data verticle to send 1 by one **with** waiting
+
+10_000 elements
+
+1. avg 17ms
+2. avg 383ms
+3. avg 41ms
+4. avg 44ms
+5. avg 344ms
